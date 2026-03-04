@@ -122,8 +122,10 @@ func (slot *Slot) Insert(v *revel.Validation, calendarEventID int,
 	return
 }
 
-/*Get all slots of a day template. Monday specifies the week for which all slots
-must be loaded and weekday specifies the day. */
+/*
+Get all slots of a day template. Monday specifies the week for which all slots
+must be loaded and weekday specifies the day.
+*/
 func (slots *Slots) Get(tx *sqlx.Tx, dayTmplID int, monday time.Time,
 	weekday int) (err error) {
 
@@ -184,7 +186,7 @@ func (slot *Slot) Get(tx *sqlx.Tx) (err error) {
 	return
 }
 
-//validate the slot struct
+// validate the slot struct
 func (slot *Slot) validate(v *revel.Validation, tx *sqlx.Tx, calendarEventID int) (err error) {
 
 	if !slot.Start.After(time.Now()) {
@@ -447,8 +449,8 @@ const (
 
 	stmtSelectSlots = `
     SELECT id, user_id, day_tmpl_id, start_time, end_time,
-		 TO_CHAR (start_time AT TIME ZONE $4, 'YYYY-MM-DD HH24:MI') AS start_str,
-		 TO_CHAR (end_time AT TIME ZONE $4, 'YYYY-MM-DD HH24:MI') AS end_str
+		 TO_CHAR (start_time AT TIME ZONE $4, 'DD.MM.YYYY HH24:MI') AS start_str,
+		 TO_CHAR (end_time AT TIME ZONE $4, 'DD.MM.YYYY HH24:MI') AS end_str
     FROM slots
     WHERE day_tmpl_id = $1
       AND start_time BETWEEN ($2) AND ($3)
@@ -457,8 +459,8 @@ const (
 
 	stmtGetSlot = `
 		SELECT id, user_id, day_tmpl_id, start_time, end_time,
-		 TO_CHAR (start_time AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS start_str,
-		 TO_CHAR (end_time AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS end_str
+		 TO_CHAR (start_time AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS start_str,
+		 TO_CHAR (end_time AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS end_str
 		FROM slots
 		WHERE id = $1
 	`
@@ -505,8 +507,8 @@ const (
 
 	stmtSelectAllSlotsOfCalendarEvent = `
 		SELECT s.id, s.user_id, s.day_tmpl_id, s.start_time, s.end_time,
-			TO_CHAR (s.start_time AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS start_str,
-			TO_CHAR (s.end_time AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS end_str
+			TO_CHAR (s.start_time AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS start_str,
+			TO_CHAR (s.end_time AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS end_str
 		FROM slots s JOIN day_templates t ON s.day_tmpl_id = t.id
 			JOIN calendar_events e ON t.calendar_event_id = e.id
 		WHERE e.id = $1
@@ -514,8 +516,8 @@ const (
 
 	stmtGetSlotEMailData = `
 		SELECT c.title AS course_title, e.title AS event_title, c.id AS course_id,
-			TO_CHAR (s.start_time AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS start,
-			TO_CHAR (s.end_time AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS end
+			TO_CHAR (s.start_time AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS start,
+			TO_CHAR (s.end_time AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS end
 		FROM slots s JOIN day_templates d ON s.day_tmpl_id = d.id
 			JOIN calendar_events e ON e.id = d.calendar_event_id
 			JOIN courses c ON c.id = e.course_id

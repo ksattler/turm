@@ -71,7 +71,7 @@ CASE WHEN u.urole = 'user' THEN 0
 END as role,
 
 u.lastlogin as last_login,
-to_timestamp(to_char(u.regdate, 'YYYY-MM-DD'), 'YYYY-MM-DD') as first_login,
+to_timestamp(to_char(u.regdate, 'DD.MM.YYYY'), 'DD.MM.YYYY') as first_login,
 
 u.pw::varchar(511) as password,
 u.activationcode::varchar(255) as activation_code
@@ -204,7 +204,7 @@ from old_blacklists b)
 
 insert into news_feed_category (name, last_editor, last_edited) (
 select distinct c.category as name, 25 as last_editor, 
-to_timestamp('2020-12-24', 'YYYY-MM-DD') as last_edited
+to_timestamp('2020-12-24', 'DD.MM.YYYY') as last_edited
 from updatefeed c)
 
 insert into news_feed (
@@ -226,7 +226,7 @@ from updatefeed u)
 
 insert into faq_category (name, last_editor, last_edited) (
 select distinct f.category as name, 25 as last_editor, 
-to_timestamp('2020-12-24', 'YYYY-MM-DD') as last_edited
+to_timestamp('2020-12-24', 'DD.MM.YYYY') as last_edited
 from old_faqs f)
 
 insert into faqs (

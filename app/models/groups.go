@@ -11,8 +11,10 @@ import (
 	"github.com/revel/revel"
 )
 
-/*Group is a model of the groups table. Groups are used to specify sections
-and subsections of an institution in which courses are placed. */
+/*
+Group is a model of the groups table. Groups are used to specify sections
+and subsections of an institution in which courses are placed.
+*/
 type Group struct {
 	ID          int           `db:"id, primarykey, autoincrement"`
 	ParentID    sql.NullInt32 `db:"parent_id"`
@@ -123,8 +125,10 @@ func (group *Group) Get(tx *sqlx.Tx) (err error) {
 	return
 }
 
-/*Groups holds all groups in which courses can be placed. The struct is
-filled recursively by traversing the children of each group. */
+/*
+Groups holds all groups in which courses can be placed. The struct is
+filled recursively by traversing the children of each group.
+*/
 type Groups []Group
 
 /*Select all groups. */
@@ -195,7 +199,7 @@ func (groups *Groups) SelectByUser(userID *int, tx *sqlx.Tx) (err error) {
 	return
 }
 
-//selectChildren recursively returns all children of the current group.
+// selectChildren recursively returns all children of the current group.
 func (group *Group) selectChildren(tx *sqlx.Tx) (hasLimits bool, err error) {
 
 	err = tx.Select(&group.Groups, stmtGetChildren, group.ID)
@@ -451,7 +455,7 @@ const (
 	stmtSelectGroups = `
 		SELECT
 			id, parent_id, name, course_limit,
-			TO_CHAR (last_edited AT TIME ZONE $1, 'YYYY-MM-DD HH24:MI') as last_edited
+			TO_CHAR (last_edited AT TIME ZONE $1, 'DD.MM.YYYY HH24:MI') as last_edited
 		FROM groups
 		WHERE last_editor = $2
 		ORDER BY name ASC

@@ -10,8 +10,10 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-/*ListConf determines to whom an e-mail is send or which users are at the
-downloaded participants list. */
+/*
+ListConf determines to whom an e-mail is send or which users are at the
+downloaded participants list.
+*/
 type ListConf struct {
 
 	//specify which users are downloaded/e-mailed
@@ -23,6 +25,8 @@ type ListConf struct {
 
 	//used for downloading the participants list
 	UseComma bool
+	Excel    bool
+	ISO8859  bool
 	Filename string
 
 	//used for sending an e-mail
@@ -207,12 +211,16 @@ func (lists *ParticipantLists) Get(tx *sqlx.Tx, courseID *int, viewMatrNr bool,
 	return
 }
 
-/*Entries of all users on either the participants list, the wait list or
-the unsubscribed list. */
+/*
+Entries of all users on either the participants list, the wait list or
+the unsubscribed list.
+*/
 type Entries []Entry
 
-/*Entry of a user on either the participants list, the wait list or
-the unsubscribed list. */
+/*
+Entry of a user on either the participants list, the wait list or
+the unsubscribed list.
+*/
 type Entry struct {
 	User
 	Enrolled
@@ -314,9 +322,9 @@ const (
 	stmtSelectParticipantsCourseData = `
     SELECT
       id, title, active,
-      TO_CHAR (enrollment_start AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS enrollment_start_str,
-      TO_CHAR (enrollment_end AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS enrollment_end_str,
-      TO_CHAR (expiration_date AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS expiration_date_str,
+      TO_CHAR (enrollment_start AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS enrollment_start_str,
+      TO_CHAR (enrollment_end AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS enrollment_end_str,
+      TO_CHAR (expiration_date AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS expiration_date_str,
       (current_timestamp >= expiration_date) AS expired,
 
 			( SELECT email
@@ -325,7 +333,7 @@ const (
 			) AS user_email,
 
 			CASE WHEN unsubscribe_end IS NOT NULL
-					THEN TO_CHAR (unsubscribe_end AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI')
+					THEN TO_CHAR (unsubscribe_end AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI')
 				ELSE null
 			END AS unsubscribe_end_str
 
@@ -363,7 +371,7 @@ const (
       u.id, u.last_name, u.first_name, u.email, u.salutation, (u.password IS NULL) AS is_ldap,
       u.language, u.matr_nr, u.academic_title, u.title, u.name_affix, u.affiliations,
       e.user_id, e.event_id, e.status, e.time_of_enrollment, e.comment,
-      TO_CHAR (e.time_of_enrollment AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS time_of_enrollment_str
+      TO_CHAR (e.time_of_enrollment AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS time_of_enrollment_str
     FROM users u JOIN enrolled e ON u.id = e.user_id
     WHERE e.event_id = $1
       AND e.status != 1 /*on waitlist */
@@ -375,11 +383,11 @@ const (
       u.id, u.last_name, u.first_name, u.email, u.salutation, (u.password IS NULL) AS is_ldap,
       u.language, u.matr_nr, u.academic_title, u.title, u.name_affix, u.affiliations,
       e.user_id, e.event_id, e.status, e.time_of_enrollment, e.comment,
-      TO_CHAR (e.time_of_enrollment AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS time_of_enrollment_str
+      TO_CHAR (e.time_of_enrollment AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS time_of_enrollment_str
     FROM users u JOIN enrolled e ON u.id = e.user_id
     WHERE e.event_id = $1
       AND e.status = 1 /*on waitlist */
-		ORDER BY u.last_name ASC
+		ORDER BY e.time_of_enrollment ASC
   `
 
 	stmtSelectUnsubscribed = `

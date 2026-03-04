@@ -555,8 +555,10 @@ func (user *User) AuthorizedToEdit(table *string, ID *int) (authorized, expired 
 	return
 }
 
-/*HasElevatedRights returns whether a user is an instructor, editor, creator or
-admin (of a course). */
+/*
+HasElevatedRights returns whether a user is an instructor, editor, creator or
+admin (of a course).
+*/
 func (user *User) HasElevatedRights(ID *int, table string) (authorized, expired bool, err error) {
 
 	tx, err := app.Db.Beginx()
@@ -618,7 +620,7 @@ const (
 				first_name = $1, last_name = $2, salutation = $4, last_login = $5,
 				matr_nr = $7, academic_title = $8, title = $9, name_affix = $10, affiliations = $11
 		RETURNING id, last_name, first_name, email, role, matr_nr, language,
-			TO_CHAR (first_login AT TIME ZONE $12, 'YYYY-MM-DD HH24:MI:SS') as first_login
+			TO_CHAR (first_login AT TIME ZONE $12, 'DD.MM.YYYY HH24:MI:SS') as first_login
 	`
 
 	stmtLoginExtern = `
@@ -644,8 +646,8 @@ const (
 		SELECT
 			id, last_name, first_name, email, salutation, role, activation_code,
 			language, matr_nr, academic_title, title, name_affix, affiliations,
-			TO_CHAR (last_login AT TIME ZONE $1, 'YYYY-MM-DD HH24:MI') as last_login,
-			TO_CHAR (first_login AT TIME ZONE $1, 'YYYY-MM-DD HH24:MI') as first_login,
+			TO_CHAR (last_login AT TIME ZONE $1, 'DD.MM.YYYY HH24:MI') as last_login,
+			TO_CHAR (first_login AT TIME ZONE $1, 'DD.MM.YYYY HH24:MI') as first_login,
 			(password IS NULL) AS is_ldap
 		FROM users
 		WHERE id = $2

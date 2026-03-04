@@ -834,7 +834,7 @@ const (
 	stmtSelectUserEnrollmentsExpired = `
 		SELECT en.user_id, en.event_id, en.status, c.title AS course_title,
 			e.title AS event_title, c.id AS course_id, en.time_of_enrollment, en.comment,
-		TO_CHAR (en.time_of_enrollment AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS time_of_enrollment_str
+		TO_CHAR (en.time_of_enrollment AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS time_of_enrollment_str
 		FROM enrolled en JOIN events e ON en.event_id = e.id
 			JOIN courses c ON e.course_id = c.id
 		WHERE en.user_id = $1
@@ -845,7 +845,7 @@ const (
 	stmtSelectUserEnrollments = `
 		SELECT en.user_id, en.event_id,	en.status, c.title AS course_title,
 			e.title AS event_title, c.id AS course_id, en.time_of_enrollment, en.comment,
-			TO_CHAR (en.time_of_enrollment AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS time_of_enrollment_str
+			TO_CHAR (en.time_of_enrollment AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS time_of_enrollment_str
 		FROM enrolled en JOIN events e ON en.event_id = e.id
 			JOIN courses c ON e.course_id = c.id
 		WHERE en.user_id = $1
@@ -856,8 +856,8 @@ const (
 	stmtSelectUserSlotEnrollmentsExpired = `
 		SELECT s.user_id, ce.id AS event_id, c.title AS course_title,
 			ce.title AS event_title, c.id AS course_id,
-		TO_CHAR (s.start_time AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS start,
-		TO_CHAR (s.end_time AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS end
+		TO_CHAR (s.start_time AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS start,
+		TO_CHAR (s.end_time AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS end
 		FROM slots s JOIN day_templates t ON s.day_tmpl_id = t.id
 			JOIN calendar_events ce ON t.calendar_event_id = ce.id
 			JOIN courses c ON ce.course_id = c.id
@@ -869,8 +869,8 @@ const (
 	stmtSelectUserSlotEnrollments = `
 		SELECT s.user_id, ce.id AS event_id, c.title AS course_title,
 			ce.title AS event_title, c.id AS course_id,
-		TO_CHAR (s.start_time AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS start,
-		TO_CHAR (s.end_time AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS end
+		TO_CHAR (s.start_time AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS start,
+		TO_CHAR (s.end_time AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS end
 		FROM slots s JOIN day_templates t ON s.day_tmpl_id = t.id
 			JOIN calendar_events ce ON t.calendar_event_id = ce.id
 			JOIN courses c ON ce.course_id = c.id

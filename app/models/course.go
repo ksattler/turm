@@ -277,9 +277,11 @@ func (course *Course) UpdateTimestamp(v *revel.Validation, conf *EditEMailConfig
 	return
 }
 
-/*Get all course data. If manage is false, only get publicly available course
+/*
+Get all course data. If manage is false, only get publicly available course
 data. Also, if it is false, get enrollment information for this user for each
-event. */
+event.
+*/
 func (course *Course) Get(tx *sqlx.Tx, manage bool, userID int) (err error) {
 
 	txWasNil := (tx == nil)
@@ -472,7 +474,7 @@ func (course *Course) GetColumnValue(tx *sqlx.Tx, column string) (err error) {
 	return getColumnValue(tx, column, "courses", course.ID, course)
 }
 
-//validateEnrollment validates whether a user can enroll in a course
+// validateEnrollment validates whether a user can enroll in a course
 func (course *Course) validateEnrollment(tx *sqlx.Tx, userID int) (err error) {
 
 	//if the user is at the blocklist
@@ -789,8 +791,10 @@ func (course *Course) Load(version int, data *[]byte) (success bool, err error) 
 	return
 }
 
-/*InsertUploadedCourse a new course from a provided course struct. The course
-struct is extracted from an uploaded JSON file. */
+/*
+InsertUploadedCourse a new course from a provided course struct. The course
+struct is extracted from an uploaded JSON file.
+*/
 func (course *Course) InsertUploadedCourse() (err error) {
 
 	tx, err := app.Db.Beginx()
@@ -869,7 +873,7 @@ func (course *Course) InsertFromDraft(v *revel.Validation) (err error) {
 	return
 }
 
-//FeePattern is the regular expression of accepted course fees
+// FeePattern is the regular expression of accepted course fees
 var FeePattern = regexp.MustCompile("^([0-9]{1,6}([,|.][0-9]{0,2})?)?")
 
 const (
@@ -878,14 +882,14 @@ const (
 			id, title, creator, subtitle, visible, active, only_ldap, parent_id,
 			description, fee, custom_email, enroll_limit_events, speaker, creation_date,
 			enrollment_start, enrollment_end, unsubscribe_end, expiration_date,
-			TO_CHAR (creation_date AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS creation_date_str,
-			TO_CHAR (enrollment_start AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS enrollment_start_str,
-			TO_CHAR (enrollment_end AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS enrollment_end_str,
-			TO_CHAR (expiration_date AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS expiration_date_str,
+			TO_CHAR (creation_date AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS creation_date_str,
+			TO_CHAR (enrollment_start AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS enrollment_start_str,
+			TO_CHAR (enrollment_end AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS enrollment_end_str,
+			TO_CHAR (expiration_date AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS expiration_date_str,
 			(current_timestamp >= expiration_date) AS expired,
 
 			CASE WHEN unsubscribe_end IS NOT NULL
-					THEN TO_CHAR (unsubscribe_end AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI')
+					THEN TO_CHAR (unsubscribe_end AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI')
 				ELSE null
 			END AS unsubscribe_end_str
 

@@ -142,7 +142,7 @@ func (entry *LogEntry) Solve() (err error) {
 const (
 	stmtSelectLogEntries = `
     SELECT id, time_of_creation, json,
-			TO_CHAR (time_of_creation AT TIME ZONE $1, 'YYYY-MM-DD HH24:MI:SS') AS time_of_creation_str
+			TO_CHAR (time_of_creation AT TIME ZONE $1, 'DD.MM.YYYY HH24:MI:SS') AS time_of_creation_str
     FROM log_entries
 		WHERE NOT solved
     ORDER BY time_of_creation DESC

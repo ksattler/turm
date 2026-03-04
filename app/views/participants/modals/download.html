@@ -84,11 +84,17 @@
             <label class="form-check-label">{{msg $ "pcpts.unsubscribed"}}</label>
           </div>
 
-          <!-- use comma -->
+          <!-- file format -->
           <small class="form-text text-muted mt-4">
-            {{msg $ "pcpts.download.comma.info"}}
+            {{msg $ "pcpts.download.format.info"}}
           </small>
           <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" name="conf.Excel"
+              id="conf-excel-check"
+              onchange="document.getElementById('conf-comma-group').classList.toggle('d-none', this.checked);">
+            <label class="form-check-label">{{msg $ "pcpts.download.excel"}}</label>
+          </div>
+          <div id="conf-comma-group" class="form-group form-check">
             <input type="checkbox" class="form-check-input" name="conf.UseComma">
             <label class="form-check-label">{{msg $ "pcpts.download.comma"}}</label>
           </div>

@@ -339,8 +339,8 @@ const (
 		SELECT u.salutation, u.title, u.name_affix, u.academic_title, u.last_name,
 			u.first_name, c.id AS course_id, c.title AS course_title, e.title AS event_title,
 			uc.email AS email_creator,
-			TO_CHAR (s.start_time AT TIME ZONE $5, 'YYYY-MM-DD HH24:MI') AS start,
-			TO_CHAR (s.end_time AT TIME ZONE $5, 'YYYY-MM-DD HH24:MI') AS end
+			TO_CHAR (s.start_time AT TIME ZONE $5, 'DD.MM.YYYY HH24:MI') AS start,
+			TO_CHAR (s.end_time AT TIME ZONE $5, 'DD.MM.YYYY HH24:MI') AS end
 		FROM users u, courses c
 			JOIN users uc ON c.creator = uc.id
 			JOIN calendar_events e ON c.id = e.course_id

@@ -57,7 +57,8 @@ func (users *Users) Search(value *string, searchInactive *bool) (err error) {
 	return
 }
 
-/*AutoEnrollFromWaitList is a function that is triggered in many different situations:
+/*
+AutoEnrollFromWaitList is a function that is triggered in many different situations:
 - A user unsubscribes from an event and now there is a free slot.
 - When increasing the course capacity.
 - When manually unsubscribing an user from an event.
@@ -86,7 +87,7 @@ func (users *Users) AutoEnrollFromWaitList(tx *sqlx.Tx, eventID *int,
 const (
 	stmtSearchUsers = `
     SELECT id, last_name, first_name, email, salutation, role, title, academic_title, name_affix,
-      TO_CHAR (last_login AT TIME ZONE $3, 'YYYY-MM-DD HH24:MI') as last_login
+      TO_CHAR (last_login AT TIME ZONE $3, 'DD.MM.YYYY HH24:MI') as last_login
     FROM users
     WHERE (
 				(activation_code IS NOT NULL) = $4
@@ -115,7 +116,7 @@ const (
 
 	stmtSelectUsers = `
 		SELECT id, last_name, first_name, email, salutation, title, academic_title, name_affix,
-			TO_CHAR (last_login AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') as last_login, role
+			TO_CHAR (last_login AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') as last_login, role
 		FROM users
 		WHERE role = $1
 			AND activation_code IS NULL

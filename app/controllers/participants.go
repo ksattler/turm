@@ -10,6 +10,9 @@ import (
 	"turm/app/models"
 
 	"github.com/revel/revel"
+	"github.com/xuri/excelize/v2"
+	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/transform"
 )
 
 /*Open a course for participants management.
@@ -96,13 +99,18 @@ func (c Participants) Download(ID int, conf models.ListConf) revel.Result {
 
 	//get the participants
 	participants := models.Participants{ID: ID}
-	if err := participants.Get(userID, true); err != nil {
+	if err2 := participants.Get(userID, true); err2 != nil {
 		return flashError(
-			errDB, err, "", c.Controller, "")
+			errDB, err2, "", c.Controller, "")
 	}
 
 	//create the file and get the filepath
-	filepath, err := createCSV(c.Controller, &participants, &conf)
+	var filepath string
+	if conf.Excel {
+		filepath, err = createXls(c.Controller, &participants, &conf)
+	} else {
+		filepath, err = createCSV(c.Controller, &participants, &conf)
+	}
 	if err != nil {
 		return flashError(
 			errDB, err, "", c.Controller, "")
@@ -655,10 +663,17 @@ func createCSV(c *revel.Controller, participants *models.Participants,
 			"error", err.Error())
 		return
 	}
-	defer file.Close() //close file at the end of the function
+	defer file.Close()
 
-	//write data to file
-	writer := csv.NewWriter(file)
+	//wrap with ISO-8859-1 encoder when requested, otherwise keep UTF-8
+	var writer *csv.Writer
+	if conf.ISO8859 {
+		tw := transform.NewWriter(file, charmap.ISO8859_1.NewEncoder())
+		defer tw.Close()
+		writer = csv.NewWriter(tw)
+	} else {
+		writer = csv.NewWriter(file)
+	}
 	writer.Comma = ';'
 	if conf.UseComma {
 		writer.Comma = ','
@@ -675,6 +690,263 @@ func createCSV(c *revel.Controller, participants *models.Participants,
 	}
 
 	return
+}
+
+//createXls creates the Excel (.xlsx) file containing the list of participants
+func createXls(c *revel.Controller, participants *models.Participants,
+	conf *models.ListConf) (filepath string, err error) {
+
+	//get date and time
+	year, month, day := time.Now().Date()
+	hour, minute, _ := time.Now().Clock()
+	date := strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day)
+	timeStr := strconv.Itoa(hour) + ":" + strconv.Itoa(minute)
+
+	//no custom filename set
+	if conf.Filename == "" {
+		conf.Filename = date + "_" + participants.Title
+		conf.Filename = strings.ReplaceAll(conf.Filename, "/", " ")
+	}
+	filepath = "/tmp/" + conf.Filename + ".xlsx"
+
+	f := excelize.NewFile()
+	defer f.Close()
+
+	sheet := "Sheet1"
+	row := 1
+
+	//helper to write a row
+	writeRow := func(values []string) {
+		for col, val := range values {
+			cell, _ := excelize.CoordinatesToCellName(col+1, row)
+			f.SetCellValue(sheet, cell, val)
+		}
+		row++
+	}
+
+	//course ID, title and extraction time
+	writeRow([]string{c.Message("course.title") + ": " + participants.Title})
+	writeRow([]string{c.Message("course.ID") + ": " + strconv.Itoa(participants.ID)})
+	writeRow([]string{c.Message("pcpts.download.extraction.time") + ": " + date + " " + timeStr})
+
+	hasEvent := false
+	hasCalendarEvent := false
+	for _, event := range participants.Lists {
+		if !event.IsCalendarEvent {
+			hasEvent = true
+		} else {
+			hasCalendarEvent = true
+		}
+	}
+
+	//headings and data for normal events
+	if hasEvent {
+		row++ //blank row
+		writeRow([]string{
+			c.Message("event.ID"),
+			c.Message("event.title"),
+			c.Message("user.salutation"),
+			c.Message("user.academic.title"),
+			c.Message("user.title"),
+			c.Message("user.firstname"),
+			c.Message("user.name.affix"),
+			c.Message("user.lastname"),
+			c.Message("user.email"),
+			c.Message("user.language"),
+			c.Message("user.matr.nr"),
+			c.Message("user.affiliation"),
+			c.Message("user.degree"),
+			c.Message("user.course.of.studies"),
+			c.Message("user.semester"),
+			c.Message("enroll.time"),
+			c.Message("enroll.status"),
+			c.Message("event.comment"),
+		})
+		row++ //blank row after header
+	}
+
+	for _, event := range participants.Lists {
+		if (conf.AllEvents || containsEvent(conf.EventIDs, event.ID)) &&
+			!event.IsCalendarEvent {
+
+			if conf.Participants && len(event.Participants) != 0 {
+				row++ //blank row before group
+				appendListXls(f, sheet, &row, writeRow, event.Participants, c, event.ID, event.Title)
+			}
+			if conf.WaitList && len(event.Waitlist) != 0 {
+				row++
+				appendListXls(f, sheet, &row, writeRow, event.Waitlist, c, event.ID, event.Title)
+			}
+			if conf.Unsubscribed && len(event.Unsubscribed) != 0 {
+				row++
+				appendListXls(f, sheet, &row, writeRow, event.Unsubscribed, c, event.ID, event.Title)
+			}
+		}
+	}
+
+	//headings and data for calendar events
+	if hasCalendarEvent {
+		row++ //blank row
+		writeRow([]string{
+			c.Message("event.ID"),
+			c.Message("event.title"),
+			c.Message("user.salutation"),
+			c.Message("user.academic.title"),
+			c.Message("user.title"),
+			c.Message("user.firstname"),
+			c.Message("user.name.affix"),
+			c.Message("user.lastname"),
+			c.Message("user.email"),
+			c.Message("user.language"),
+			c.Message("user.matr.nr"),
+			c.Message("user.affiliation"),
+			c.Message("user.degree"),
+			c.Message("user.course.of.studies"),
+			c.Message("user.semester"),
+			c.Message("enroll.start.time"),
+			c.Message("enroll.end.time"),
+		})
+		row++ //blank row after header
+	}
+
+	for _, event := range participants.Lists {
+		if (conf.AllEvents || containsEvent(conf.EventIDs, event.ID)) &&
+			event.IsCalendarEvent {
+
+			for _, slot := range event.Slots {
+				if conf.Start != "" {
+					if slot.EndStr < conf.Start || slot.StartStr > conf.End {
+						continue
+					}
+				}
+				appendSlotXls(writeRow, c, &slot, event.ID, event.Title)
+			}
+		}
+	}
+
+	if err = f.SaveAs(filepath); err != nil {
+		c.Log.Error("failed to save xlsx file", "filepath", filepath, "error", err.Error())
+	}
+	return
+}
+
+//appendListXls appends the users of a participant list to an Excel sheet
+func appendListXls(f *excelize.File, sheet string, row *int,
+	writeRow func([]string), list models.Entries, c *revel.Controller,
+	ID int, title string) {
+
+	for _, user := range list {
+
+		salutation := c.Message("user.salutation.ms")
+		if user.Salutation == models.NONE {
+			salutation = c.Message("user.salutation.none")
+		} else if user.Salutation == models.MR {
+			salutation = c.Message("user.salutation.mr")
+		}
+
+		matrNr := ""
+		if user.MatrNr.Valid {
+			if user.MatrNr.Int32 != 12345 {
+				matrNr = strconv.Itoa(int(user.MatrNr.Int32))
+			} else {
+				matrNr = c.Message("user.matr.nr.not.visible")
+			}
+		}
+
+		affiliations := stringFromSlice(user.Affiliations.Affiliations)
+
+		degrees, studies, semesters := "", "", ""
+		for _, study := range user.Studies {
+			degrees = appendValueToString(degrees, study.Degree)
+			studies = appendValueToString(studies, study.CourseOfStudies)
+			semesters = appendValueToString(semesters, strconv.Itoa(study.Semester))
+		}
+
+		enrollStatus := c.Message("enroll.status.enrolled")
+		switch user.Status {
+		case models.ONWAITLIST:
+			enrollStatus = c.Message("enroll.status.on.wait.list")
+		case models.AWAITINGPAYMENT:
+			enrollStatus = c.Message("enroll.status.awaiting.payment")
+		case models.PAID:
+			enrollStatus = c.Message("enroll.status.paid")
+		case models.FREED:
+			enrollStatus = c.Message("enroll.status.freed")
+		case models.UNSUBSCRIBED:
+			enrollStatus = c.Message("enroll.status.unsubscribed")
+		}
+
+		writeRow([]string{
+			strconv.Itoa(ID),
+			title,
+			salutation,
+			user.AcademicTitle.String,
+			user.Title.String,
+			user.FirstName,
+			user.NameAffix.String,
+			user.LastName,
+			user.EMail,
+			user.Language.String,
+			matrNr,
+			affiliations,
+			degrees,
+			studies,
+			semesters,
+			user.TimeOfEnrollmentStr,
+			enrollStatus,
+			user.Comment.String,
+		})
+	}
+}
+
+//appendSlotXls appends a calendar slot to an Excel sheet
+func appendSlotXls(writeRow func([]string), c *revel.Controller,
+	slot *models.Slot, ID int, title string) {
+
+	salutation := c.Message("user.salutation.ms")
+	if slot.User.Salutation == models.NONE {
+		salutation = c.Message("user.salutation.none")
+	} else if slot.User.Salutation == models.MR {
+		salutation = c.Message("user.salutation.mr")
+	}
+
+	matrNr := ""
+	if slot.User.MatrNr.Valid {
+		if slot.User.MatrNr.Int32 != 12345 {
+			matrNr = strconv.Itoa(int(slot.User.MatrNr.Int32))
+		} else {
+			matrNr = c.Message("user.matr.nr.not.visible")
+		}
+	}
+
+	affiliations := stringFromSlice(slot.User.Affiliations.Affiliations)
+
+	degrees, studies, semesters := "", "", ""
+	for _, study := range slot.User.Studies {
+		degrees = appendValueToString(degrees, study.Degree)
+		studies = appendValueToString(studies, study.CourseOfStudies)
+		semesters = appendValueToString(semesters, strconv.Itoa(study.Semester))
+	}
+
+	writeRow([]string{
+		strconv.Itoa(ID),
+		title,
+		salutation,
+		slot.User.AcademicTitle.String,
+		slot.User.Title.String,
+		slot.User.FirstName,
+		slot.User.NameAffix.String,
+		slot.User.LastName,
+		slot.User.EMail,
+		slot.User.Language.String,
+		matrNr,
+		affiliations,
+		degrees,
+		studies,
+		semesters,
+		slot.StartStr,
+		slot.EndStr,
+	})
 }
 
 //appendList appends the users of one of the partiticpant lists (enrolled, waitlist, etc.)

@@ -32,8 +32,10 @@ type Exception struct {
 /*Exceptions is a slice of exceptions. */
 type Exceptions []Exception
 
-/*Get all exceptions of a week. Monday specifies the week for which all exceptions
-must be loaded. */
+/*
+Get all exceptions of a week. Monday specifies the week for which all exceptions
+must be loaded.
+*/
 func (excepts *ExceptionsOfWeek) Get(tx *sqlx.Tx, eventID *int, monday time.Time) (err error) {
 
 	monday = time.Date(monday.Year(), monday.Month(), monday.Day(), 0, 0, 0, 0, monday.Location())
@@ -48,7 +50,7 @@ func (excepts *ExceptionsOfWeek) Get(tx *sqlx.Tx, eventID *int, monday time.Time
 	return
 }
 
-//validate an exception
+// validate an exception
 func (except *Exception) validate(v *revel.Validation, tx *sqlx.Tx) (err error) {
 
 	//get the time values
@@ -353,8 +355,8 @@ const (
 
 	stmtSelectSlotsDuringException = `
 		SELECT c.title AS course_title, e.title AS event_title, c.id AS course_id,
-			TO_CHAR (s.start_time AT TIME ZONE $4, 'YYYY-MM-DD HH24:MI') AS start,
-			TO_CHAR (s.end_time AT TIME ZONE $4, 'YYYY-MM-DD HH24:MI') AS end,
+			TO_CHAR (s.start_time AT TIME ZONE $4, 'DD.MM.YYYY HH24:MI') AS start,
+			TO_CHAR (s.end_time AT TIME ZONE $4, 'DD.MM.YYYY HH24:MI') AS end,
 			s.user_id AS user_id
 		FROM slots s JOIN day_templates d ON d.id = s.day_tmpl_id
 			JOIN calendar_events e ON e.id = d.calendar_event_id
@@ -384,8 +386,8 @@ const (
 
 	stmtSelectExceptions = `
     SELECT id, calendar_event_id, annotation,
-			TO_CHAR (exception_start AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS exception_start_str,
-			TO_CHAR (exception_end AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') AS exception_end_str
+			TO_CHAR (exception_start AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS exception_start_str,
+			TO_CHAR (exception_end AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS exception_end_str
     FROM calendar_exceptions
     WHERE calendar_event_id = $1
 			AND exception_end > now()

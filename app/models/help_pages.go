@@ -9,9 +9,11 @@ import (
 	"github.com/revel/revel"
 )
 
-/*Category is a model of the category table. Categories are
+/*
+Category is a model of the category table. Categories are
 used for grouping the entries of the FAQs (faq_category) and
-the news feed (news_feed_category). */
+the news feed (news_feed_category).
+*/
 type Category struct {
 	ID         int           `db:"id, primarykey, autoincrement"`
 	Name       string        `db:"name"`
@@ -77,13 +79,15 @@ func (category *Category) Delete(table *string) (err error) {
 /*Categories holds all categories of either the FAQs or the news feed. */
 type Categories []Category
 
-/*Select all categories and their respective entries from
-either the FAQs or the NewsFeed table. */
+/*
+Select all categories and their respective entries from
+either the FAQs or the NewsFeed table.
+*/
 func (categories *Categories) Select(table string) (err error) {
 
 	stmt := `
 		SELECT id, name, last_editor,
-			TO_CHAR (last_edited AT TIME ZONE $1, 'YYYY-MM-DD HH24:MI:SS') as last_edited
+			TO_CHAR (last_edited AT TIME ZONE $1, 'DD.MM.YYYY HH24:MI:SS') as last_edited
 		FROM ` + table + `
 		ORDER BY name ASC
 	`
@@ -212,7 +216,7 @@ type HelpPageEntries []HelpPageEntry
 const (
 	stmtSelectFAQs = `
 		SELECT id, last_editor, question, answer, category_id,
-			TO_CHAR (last_edited AT TIME ZONE $1, 'YYYY-MM-DD HH24:MI:SS') as last_edited
+			TO_CHAR (last_edited AT TIME ZONE $1, 'DD.MM.YYYY HH24:MI:SS') as last_edited
 		FROM faqs
 		WHERE category_id = $2
 		ORDER BY last_edited DESC
@@ -220,7 +224,7 @@ const (
 
 	stmtSelectNews = `
 		SELECT id, last_editor, content, category_id,
-			TO_CHAR (last_edited AT TIME ZONE $1, 'YYYY-MM-DD HH24:MI:SS') as last_edited
+			TO_CHAR (last_edited AT TIME ZONE $1, 'DD.MM.YYYY HH24:MI:SS') as last_edited
 		FROM news_feed
 		WHERE category_id = $2
 		ORDER BY last_edited DESC

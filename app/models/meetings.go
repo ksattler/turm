@@ -259,8 +259,8 @@ const (
 		SELECT
 			id, event_id, meeting_interval, weekday, place, annotation,
 			meeting_start, meeting_end,
-			TO_CHAR (meeting_start AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') as meeting_start_str,
-			TO_CHAR (meeting_end AT TIME ZONE $2, 'YYYY-MM-DD HH24:MI') as meeting_end_str
+			TO_CHAR (meeting_start AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') as meeting_start_str,
+			TO_CHAR (meeting_end AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') as meeting_end_str
 		FROM meetings
 		WHERE event_id = $1
 		ORDER BY id ASC
