@@ -9,17 +9,31 @@ import (
 	"turm/app"
 	"turm/app/models"
 
-	ldap "gopkg.in/ldap.v2"
+	// ldap "gopkg.in/ldap.v2"
+	"github.com/go-ldap/ldap/v3"
 )
 
-/*LDAPServerAuth implements the authentication of an user against the ldap server after the user
-entered his username and password. */
+/*
+LDAPServerAuth implements the authentication of an user against the ldap server after the user
+entered his username and password.
+*/
 func LDAPServerAuth(credentials *models.Credentials, user *models.User) (success bool, err error) {
 
 	//get a TLS encrypted connection
-	tlsConfig := &tls.Config{InsecureSkipVerify: true}
-	hostAndPort := fmt.Sprintf("%s:%d", app.LdapHost, app.LdapPort)
-	l, err := ldap.DialTLS("tcp", hostAndPort, tlsConfig)
+	// tlsConfig := &tls.Config{InsecureSkipVerify: true}
+	tlsConfig := &tls.Config{InsecureSkipVerify: true,
+		MinVersion: tls.VersionTLS12,
+		ServerName: app.LdapHost,
+		CipherSuites: []uint16{
+			tls.TLS_RSA_WITH_AES_128_CBC_SHA,
+			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+			tls.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+		}}
+	// hostAndPort := fmt.Sprintf("%s:%d", app.LdapHost, app.LdapPort)
+	hostAndPort := fmt.Sprintf("ldaps://%s:%d", app.LdapHost, app.LdapPort)
+	log.Infof("Connecting to LDAP server at %s", hostAndPort)
+	// l, err := ldap.DialTLS("tcp", hostAndPort, tlsConfig)
+	l, err := ldap.DialURL(hostAndPort, ldap.DialWithTLSConfig(tlsConfig))
 	if err != nil {
 		log.Error("error getting the TLS encrypted connection",
 			"hostAndPort", hostAndPort, "tlsConfig", tlsConfig, "error", err.Error())
@@ -51,6 +65,22 @@ func LDAPServerAuth(credentials *models.Credentials, user *models.User) (success
 
 	//at this point the actual login was successful
 	//now we want to get the user details
+
+	//DEBUG: search for all available LDAP attributes and log them
+	debugSearchRequest := ldap.NewSearchRequest(
+		base,
+		ldap.ScopeWholeSubtree,
+		ldap.NeverDerefAliases,
+		0, 0, false,
+		fmt.Sprintf("(&(objectClass=user)(uid=%s))", credentials.Username),
+		[]string{"*"},
+		nil,
+	)
+	if debugSR, debugErr := l.Search(debugSearchRequest); debugErr == nil && len(debugSR.Entries) > 0 {
+		for _, attr := range debugSR.Entries[0].Attributes {
+			log.Debug("LDAP attribute", "name", attr.Name, "values", attr.Values)
+		}
+	}
 
 	//attrNames is used to filter for specific attributes
 	attrNames := []string{"thuEduStudentNumber", "givenName", "sn", "mail", "thuEduTitle",
