@@ -15,3 +15,7 @@ COMMENT ON TABLE log_entries IS 'Table containing all relevant error log entries
 /* Move away from the terms blacklist and whitelist. */
 ALTER TABLE blacklists RENAME TO blocklists;
 ALTER TABLE whitelists RENAME TO allowlists; 
+
+
+/* Bilingual course description. */
+ALTER TABLE courses ADD COLUMN description_en text;

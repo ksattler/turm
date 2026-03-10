@@ -482,9 +482,9 @@ func (c Edit) ChangeText(ID int, fieldID, value string, conf models.EditEMailCon
 		}
 	}
 
-	if fieldID != models.ColDescription && fieldID != models.ColCustomEMail &&
-		fieldID != models.ColSpeaker && fieldID != models.ColTitle &&
-		fieldID != models.ColSubtitle && fieldID != models.ColFee {
+	if fieldID != models.ColDescription && fieldID != models.ColDescriptionEn &&
+		fieldID != models.ColCustomEMail && fieldID != models.ColSpeaker &&
+		fieldID != models.ColTitle && fieldID != models.ColSubtitle && fieldID != models.ColFee {
 		return c.RenderJSON(
 			response{Status: ERROR, Msg: c.Message("error.undefined")})
 	}

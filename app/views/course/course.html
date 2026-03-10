@@ -213,50 +213,102 @@
   {{template "course/calendarEvents.html" dict_addLocale $.currentLocale "events" .course.CalendarEvents "session" .session}}
 </div>
 
-<!-- description -->
-<div id="div-edit-description" {{if not .course.Description.Valid}}class="d-none"{{end}}>
-  <div class="row mb-2">
-    <div class="col-sm-4 text-muted">
-      {{msg $ "course.description"}}:
-      <br>
-      <a data-toggle="collapse" href="#div-description" role="button"
-        aria-expanded="true" aria-controls="div-description"
-        id="course-description-btn">
-        {{msg $ "button.collapse"}}
-      </a>
-      <a href="#no-scroll" class="badge btn-outline-darkblue edit-show d-none"
-        onclick='openTextAreaModal({{msg $ "course.description"}},
-          "description", true, "{{url "Edit.ChangeText"}}",
-          {{msg $ "course.description.change.info"}}, false);'
-        title='{{msg $ "title.edit"}}'>
-        {{template "icons/pencil.html" . }}
-      </a>
-      <a href="#no-scroll" class="badge btn-outline-darkblue edit-show d-none"
-        onclick='confirmDeleteJSONModal({{msg $ "course.description.delete.title"}},
-          {{msg $ "course.description.delete.confirm"}},
-          "{{url "Edit.ChangeText" .course.ID  "description" ""}}#course-registration-period");'
-        title='{{msg $ "title.delete"}}'>
-        {{template "icons/trash.html" . }}
-      </a>
+<!-- description DE: hidden in EN locale, revealed in edit mode -->
+<div {{if eq $.currentLocale "en-US"}}class="edit-show d-none"{{end}}>
+  <div id="div-edit-description" {{if not .course.Description.Valid}}class="d-none"{{end}}>
+    <div class="row mb-2">
+      <div class="col-sm-4 text-muted">
+        {{msg $ "course.description"}} (DE):
+        <br>
+        <a data-toggle="collapse" href="#div-description" role="button"
+          aria-expanded="true" aria-controls="div-description"
+          id="course-description-btn">
+          {{msg $ "button.collapse"}}
+        </a>
+        <a href="#no-scroll" class="badge btn-outline-darkblue edit-show d-none"
+          onclick='openTextAreaModal({{msg $ "course.description"}},
+            "description", true, "{{url "Edit.ChangeText"}}",
+            {{msg $ "course.description.change.info"}}, false);'
+          title='{{msg $ "title.edit"}}'>
+          {{template "icons/pencil.html" . }}
+        </a>
+        <a href="#no-scroll" class="badge btn-outline-darkblue edit-show d-none"
+          onclick='confirmDeleteJSONModal({{msg $ "course.description.delete.title"}},
+            {{msg $ "course.description.delete.confirm"}},
+            "{{url "Edit.ChangeText" .course.ID "description" ""}}#course-registration-period");'
+          title='{{msg $ "title.delete"}}'>
+          {{template "icons/trash.html" . }}
+        </a>
+      </div>
+      <div class="col-sm-8">
+        <div class="collapse show" id="div-description">
+        </div>
+      </div>
     </div>
-    <div class="col-sm-8">
-      <div class="collapse show" id="div-description">
+  </div>
+  <div id="div-add-description" {{if .course.Description.Valid}}class="d-none"{{end}}>
+    <div class="row mb-2 edit-show d-none">
+      <div class="col-sm-4 text-muted">
+        {{msg $ "course.description"}} (DE):
+      </div>
+      <div class="col-sm-8">
+        <button type="button" class="btn btn-outline-darkblue"
+          onclick='openTextAreaModal({{msg $ "course.description"}},
+            "description", false, "{{url "Edit.ChangeText"}}",
+            {{msg $ "course.description.change.info"}}, false);'>
+          {{msg $ "creator.add.description"}}
+        </button>
       </div>
     </div>
   </div>
 </div>
-<div id="div-add-description" {{if .course.Description.Valid}}class="d-none"{{end}}>
-  <div class="row mb-2 edit-show d-none">
-    <div class="col-sm-4 text-muted">
-      {{msg $ "course.description"}}:
+
+<!-- description EN: hidden in DE locale, revealed in edit mode -->
+<div {{if eq $.currentLocale "de-DE"}}class="edit-show d-none"{{end}}>
+  <div id="div-edit-description-en" {{if not .course.DescriptionEn.Valid}}class="d-none"{{end}}>
+    <div class="row mb-2">
+      <div class="col-sm-4 text-muted">
+        {{msg $ "course.description_en"}} (EN):
+        <br>
+        <a data-toggle="collapse" href="#div-description_en" role="button"
+          aria-expanded="true" aria-controls="div-description_en"
+          id="course-description_en-btn">
+          {{msg $ "button.collapse"}}
+        </a>
+        <a href="#no-scroll" class="badge btn-outline-darkblue edit-show d-none"
+          onclick='openTextAreaModal({{msg $ "course.description_en"}},
+            "description_en", true, "{{url "Edit.ChangeText"}}",
+            {{msg $ "course.description_en.change.info"}}, false);'
+          title='{{msg $ "title.edit"}}'>
+          {{template "icons/pencil.html" . }}
+        </a>
+        <a href="#no-scroll" class="badge btn-outline-darkblue edit-show d-none"
+          onclick='confirmDeleteJSONModal({{msg $ "course.description_en.delete.title"}},
+            {{msg $ "course.description_en.delete.confirm"}},
+            "{{url "Edit.ChangeText" .course.ID "description_en" ""}}#course-registration-period");'
+          title='{{msg $ "title.delete"}}'>
+          {{template "icons/trash.html" . }}
+        </a>
+      </div>
+      <div class="col-sm-8">
+        <div class="collapse show" id="div-description_en">
+        </div>
+      </div>
     </div>
-    <div class="col-sm-8">
-      <button type="button" class="btn btn-outline-darkblue"
-        onclick='openTextAreaModal({{msg $ "course.description"}},
-          "description", false, "{{url "Edit.ChangeText"}}",
-          {{msg $ "course.description.change.info"}}, false);'>
-        {{msg $ "creator.add.description"}}
-      </button>
+  </div>
+  <div id="div-add-description-en" {{if .course.DescriptionEn.Valid}}class="d-none"{{end}}>
+    <div class="row mb-2 edit-show d-none">
+      <div class="col-sm-4 text-muted">
+        {{msg $ "course.description_en"}} (EN):
+      </div>
+      <div class="col-sm-8">
+        <button type="button" class="btn btn-outline-darkblue"
+          onclick='openTextAreaModal({{msg $ "course.description_en"}},
+            "description_en", false, "{{url "Edit.ChangeText"}}",
+            {{msg $ "course.description_en.change.info"}}, false);'>
+          {{msg $ "creator.add.description_en"}}
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -535,6 +587,7 @@
   //render all html content
   $(function() {
     $('#div-description').html('{{.course.Description.String}}');
+    $('#div-description_en').html('{{.course.DescriptionEn.String}}');
     $('#div-speaker').html('{{.course.Speaker.String}}');
     $('#div-custom_email').html('{{.course.CustomEMail.String}}');
 
@@ -543,6 +596,13 @@
     })
     $('#div-description').on('shown.bs.collapse', function () {
       $('#course-description-btn').html('{{msg $ "button.collapse"}}');
+    })
+
+    $('#div-description_en').on('hidden.bs.collapse', function () {
+      $('#course-description_en-btn').html('{{msg $ "button.show"}}');
+    })
+    $('#div-description_en').on('shown.bs.collapse', function () {
+      $('#course-description_en-btn').html('{{msg $ "button.collapse"}}');
     })
 
     $('#div-speaker').on('hidden.bs.collapse', function () {

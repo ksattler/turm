@@ -24,6 +24,7 @@ type Course struct {
 	OnlyLDAP          bool            `db:"only_ldap"`
 	CreationDate      time.Time       `db:"creation_date"`
 	Description       sql.NullString  `db:"description"`
+	DescriptionEn     sql.NullString  `db:"description_en"`
 	Speaker           sql.NullString  `db:"speaker"`
 	Fee               sql.NullFloat64 `db:"fee"`
 	CustomEMail       sql.NullString  `db:"custom_email"`
@@ -803,9 +804,10 @@ func (course *Course) InsertUploadedCourse() (err error) {
 		return
 	}
 
-	err = tx.Get(course, stmtInsertCourse, course.Visible, course.Creator, course.CustomEMail, course.Description,
-		course.EnrollLimitEvents, course.EnrollmentEnd, course.EnrollmentStart, course.ExpirationDate,
-		course.Fee, course.OnlyLDAP, course.Speaker, course.Subtitle, course.Title, course.UnsubscribeEnd)
+	err = tx.Get(course, stmtInsertCourse, course.Visible, course.Creator, course.CustomEMail,
+		course.Description, course.DescriptionEn, course.EnrollLimitEvents, course.EnrollmentEnd,
+		course.EnrollmentStart, course.ExpirationDate, course.Fee, course.OnlyLDAP, course.Speaker,
+		course.Subtitle, course.Title, course.UnsubscribeEnd)
 	if err != nil {
 		log.Error("failed to insert general course data", "creator ID", course.Creator,
 			"title", course.Title, "course", *course, "error", err.Error())
@@ -880,7 +882,7 @@ const (
 	stmtGetCourse = `
 		SELECT
 			id, title, creator, subtitle, visible, active, only_ldap, parent_id,
-			description, fee, custom_email, enroll_limit_events, speaker, creation_date,
+			description, description_en, fee, custom_email, enroll_limit_events, speaker, creation_date,
 			enrollment_start, enrollment_end, unsubscribe_end, expiration_date,
 			TO_CHAR (creation_date AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS creation_date_str,
 			TO_CHAR (enrollment_start AT TIME ZONE $2, 'DD.MM.YYYY HH24:MI') AS enrollment_start_str,
@@ -917,15 +919,15 @@ const (
 
 	stmtDuplicateCourse = `
 		INSERT INTO courses (
-			title, subtitle, creator, custom_email, description, enroll_limit_events, enrollment_end,
-			enrollment_start, expiration_date, fee, only_ldap, parent_id, speaker, unsubscribe_end,
-			visible
+			title, subtitle, creator, custom_email, description, description_en, enroll_limit_events,
+			enrollment_end, enrollment_start, expiration_date, fee, only_ldap, parent_id, speaker,
+			unsubscribe_end, visible
 		)
 		(
 			SELECT
-				$2 AS title, subtitle, $3 AS creator, custom_email, description, enroll_limit_events,
-				enrollment_end, enrollment_start, expiration_date, fee, only_ldap, parent_id,
-				speaker, unsubscribe_end, visible
+				$2 AS title, subtitle, $3 AS creator, custom_email, description, description_en,
+				enroll_limit_events, enrollment_end, enrollment_start, expiration_date, fee, only_ldap,
+				parent_id, speaker, unsubscribe_end, visible
 			FROM courses
 			WHERE id = $1
 		)
@@ -934,10 +936,11 @@ const (
 
 	stmtInsertCourse = `
 		INSERT INTO courses
-			(visible, creator, custom_email, description, enroll_limit_events, enrollment_end, enrollment_start,
-			expiration_date, fee, only_ldap, speaker, subtitle, title, unsubscribe_end)
+			(visible, creator, custom_email, description, description_en, enroll_limit_events,
+			enrollment_end, enrollment_start, expiration_date, fee, only_ldap, speaker, subtitle,
+			title, unsubscribe_end)
 		VALUES
-			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
 		RETURNING id, title
 	`
 

@@ -10,6 +10,7 @@ course.title = Course title
 course.subtitle = Subtitle
 course.fee = Fee
 course.description = Course description
+course.description_en = Course description
 course.speaker = Speaker
 course.audience = Audience
 course.only.ldap = Only users with an university account.
@@ -268,6 +269,12 @@ course.description.delete.success = Deleted course description, course ID = %d.
 course.description.delete.confirm = Confirm deletion of course description.
 course.description.delete.title = Delete course description.
 course.description.change.info = Here, you can provide detailed information about the course. You can also add links to external material.
+
+course.description_en.change.success = Changed English course description, course ID = %d.
+course.description_en.delete.success = Deleted English course description, course ID = %d.
+course.description_en.delete.confirm = Confirm deletion of English course description.
+course.description_en.delete.title = Delete English course description.
+course.description_en.change.info = Here, you can provide detailed information about the course. You can also add links to external material.
 
 course.custom_email.change.success = Changed custom enrollment e-mail, course ID = %d.
 course.custom_email.delete.success = Deleted custom enrollment e-mail, course ID = %d.

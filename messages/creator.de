@@ -113,6 +113,7 @@ creator.add.editor = + &nbsp; EditorIn
 creator.add.unsubscribe.end = + &nbsp; Austragen bis
 creator.add.fee = + &nbsp; Teilnahmegebühr
 creator.add.description = + &nbsp; Kursbeschreibung
+creator.add.description_en = + &nbsp; Course description (EN)
 creator.add.speaker = + &nbsp; ReferentIn
 creator.add.custom.email = + &nbsp; Willkommensemail
 creator.add.allowlist = + &nbsp; NutzerIn auf Allowlist

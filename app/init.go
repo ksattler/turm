@@ -44,9 +44,10 @@ func init() {
 	revel.OnAppStart(initPasswords, 1) //NOTE: must be executed first
 	revel.OnAppStart(initConfigVariables, 2)
 	revel.OnAppStart(initDB, 3)
+	revel.OnAppStart(runMigrations, 4)
 
 	//register scheduled jobs
-	revel.OnAppStart(initJobSchedules, 4)
+	revel.OnAppStart(initJobSchedules, 5)
 	revel.OnAppStart(func() {
 		jobs.Schedule("@every 5s", sendEMails{})
 		jobs.Schedule(jobSchedules["jobs.dbbackup"], backupDB{})
@@ -54,7 +55,7 @@ func init() {
 		jobs.Schedule(jobSchedules["jobs.parseStudies"], parseStudies{})
 		jobs.Schedule(jobSchedules["jobs.deleteCourses"], deleteCourses{})
 		jobs.Schedule(jobSchedules["jobs.connTest"], dbConnTest{})
-	}, 5)
+	}, 6)
 
 	//close DB connection
 	revel.OnAppStop(func() {

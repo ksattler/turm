@@ -49,6 +49,8 @@ const (
 	ColSubtitle = "subtitle"
 	//ColDescription DB column name
 	ColDescription = "description"
+	//ColDescriptionEn DB column name
+	ColDescriptionEn = "description_en"
 	//ColSpeaker DB column name
 	ColSpeaker = "speaker"
 	//ColCustomEMail DB column name

@@ -10,6 +10,7 @@ course.title = Kurstitel
 course.subtitle = Untertitel
 course.fee = Teilnahmegebühr
 course.description = Kursbeschreibung
+course.description_en = Course description
 course.speaker = ReferentIn
 course.audience = Zielgruppe
 course.only.ldap = Nur NutzerInnen mit Universitätsaccount.
@@ -268,6 +269,12 @@ course.description.delete.success = Kursbeschreibung gelöscht, Kurs ID = %d.
 course.description.delete.confirm = Kursbeschreibung wirklich löschen?
 course.description.delete.title = Kursbeschreibung löschen.
 course.description.change.info = Hier können Sie eine detaillierte Beschreibung des Kurses angeben. Außerdem können Sie weitere Materialien verlinken.
+
+course.description_en.change.success = Englische Kursbeschreibung geändert, Kurs ID = %d.
+course.description_en.delete.success = Englische Kursbeschreibung gelöscht, Kurs ID = %d.
+course.description_en.delete.confirm = Englische Kursbeschreibung wirklich löschen?
+course.description_en.delete.title = Englische Kursbeschreibung löschen.
+course.description_en.change.info = Here, you can provide detailed information about the course in English. You can also add links to external material.
 
 course.custom_email.change.success = Individuelle Willkommensemail geändert, Kurs ID = %d.
 course.custom_email.delete.success = Individuelle Willkommensemail gelöscht, Kurs ID = %d.

@@ -186,6 +186,7 @@ email.edit.enrollment_start = Beginn des Einschreibezeitraums
 email.edit.enrollment_end = Ende des Einschreibezeitraums
 email.edit.unsubscribe_end = Ende des Austragezeitraums
 email.edit.description = Kursbeschreibung
+email.edit.description_en = Englische Kursbeschreibung
 email.edit.custom_email = Individuelle Willkommensemail
 email.edit.speaker = ReferentIn
 email.edit.title = Kurstitel
