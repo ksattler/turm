@@ -252,6 +252,11 @@ func (enrolled *Enrolled) EnrollOrUnsubscribe(action EnrollOption, key string) (
 	if err = data.User.Get(tx); err != nil {
 		return
 	}
+	if err = tx.Get(&data.CreatorEMail, stmtGetCreatorEMail, course.ID); err != nil {
+		log.Error("failed to get creator email", "courseID", course.ID, "error", err.Error())
+		tx.Rollback()
+		return
+	}
 
 	//get all custom e-mail data
 	if data.CustomEMail.Valid {
@@ -333,6 +338,11 @@ func (enrolled *Enrolled) Enroll(courseID *int, v *revel.Validation) (data EMail
 	data.CourseID = course.ID
 	data.User.ID = enrolled.UserID
 	if err = data.User.Get(tx); err != nil {
+		return
+	}
+	if err = tx.Get(&data.CreatorEMail, stmtGetCreatorEMail, course.ID); err != nil {
+		log.Error("failed to get creator email", "courseID", course.ID, "error", err.Error())
+		tx.Rollback()
 		return
 	}
 
@@ -454,6 +464,11 @@ func (enrolled *Enrolled) Waitlist(courseID *int, v *revel.Validation) (data EMa
 	if err = data.User.Get(tx); err != nil {
 		return
 	}
+	if err = tx.Get(&data.CreatorEMail, stmtGetCreatorEMail, course.ID); err != nil {
+		log.Error("failed to get creator email", "courseID", course.ID, "error", err.Error())
+		tx.Rollback()
+		return
+	}
 
 	tx.Commit()
 	return
@@ -527,6 +542,11 @@ func (enrolled *Enrolled) Unsubscribe(courseID *int, v *revel.Validation) (data 
 	data.CourseID = course.ID
 	data.User.ID = enrolled.UserID
 	if err = data.User.Get(tx); err != nil {
+		return
+	}
+	if err = tx.Get(&data.CreatorEMail, stmtGetCreatorEMail, course.ID); err != nil {
+		log.Error("failed to get creator email", "courseID", course.ID, "error", err.Error())
+		tx.Rollback()
 		return
 	}
 

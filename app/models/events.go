@@ -107,6 +107,13 @@ func (event *Event) Update(tx *sqlx.Tx, column string, value interface{},
 				return
 			}
 
+			var creatorEMail string
+			if err = tx.Get(&creatorEMail, stmtGetCreatorEMail, course.ID); err != nil {
+				log.Error("failed to get creator email", "courseID", course.ID, "error", err.Error())
+				tx.Rollback()
+				return
+			}
+
 			status := ENROLLED
 			if course.Fee.Valid {
 				status = AWAITINGPAYMENT
@@ -127,10 +134,11 @@ func (event *Event) Update(tx *sqlx.Tx, column string, value interface{},
 			for _, user := range autoEnrollUsers {
 
 				eMailUser := EMailData{
-					CourseTitle: course.Title,
-					CourseID:    course.ID,
-					EventTitle:  event.Title,
-					User:        user,
+					CourseTitle:  course.Title,
+					CourseID:     course.ID,
+					EventTitle:   event.Title,
+					User:         user,
+					CreatorEMail: creatorEMail,
 				}
 
 				users = append(users, eMailUser)

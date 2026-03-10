@@ -24,10 +24,11 @@ type EMailData struct {
 	URL string
 
 	//used for enrollment
-	CourseTitle string         `db:"course_title"`
-	EventTitle  string         `db:"event_title"`
-	CourseID    int            `db:"course_id"`
-	CustomEMail sql.NullString `db:"custom_email"`
+	CourseTitle  string         `db:"course_title"`
+	EventTitle   string         `db:"event_title"`
+	CourseID     int            `db:"course_id"`
+	CustomEMail  sql.NullString `db:"custom_email"`
+	CreatorEMail string         `db:"creator_email"`
 
 	//used for changing the enrollment status
 	Status EnrollmentStatus
@@ -363,5 +364,11 @@ const (
 		SELECT id AS course_id, title AS course_title
 		FROM courses
 		WHERE id = $1
+	`
+
+	stmtGetCreatorEMail = `
+		SELECT u.email
+		FROM users u JOIN courses c ON u.id = c.creator
+		WHERE c.id = $1
 	`
 )

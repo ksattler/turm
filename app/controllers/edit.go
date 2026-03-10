@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
+	tm "time"
 	"turm/app/models"
 
 	"github.com/revel/revel"
@@ -71,7 +71,7 @@ func (c Edit) Download(ID int, filename string) revel.Result {
 
 	//if the user did not provide a custom file name
 	if filename == "" {
-		now := time.Now().Format(revel.TimeFormats[1])
+		now := tm.Now().Format(revel.TimeFormats[1])
 		filename = now + " " + course.Title
 		filename = strings.ReplaceAll(filename, "/", " ")
 	}
@@ -252,8 +252,15 @@ func (c Edit) ChangeTimestamp(ID int, fieldID, date, time string,
 		msg = c.Message("course."+fieldID+".change.success", timestamp, course.ID)
 	}
 
+	displayValue := strings.TrimSpace(timestamp)
+	if valid {
+		if t2, err2 := tm.Parse("2006-01-02 15:04", displayValue); err2 == nil {
+			displayValue = t2.Format("02.01.2006 15:04")
+		}
+	}
+
 	return c.RenderJSON(
-		response{Status: SUCCESS, Msg: msg, FieldID: fieldID, Value: strings.TrimSpace(timestamp)})
+		response{Status: SUCCESS, Msg: msg, FieldID: fieldID, Value: displayValue})
 }
 
 /*ChangeUserList adds a user to the user list of a course.
@@ -577,8 +584,8 @@ func (c Edit) ChangeEnrollLimit(ID int, fieldID string, value int) revel.Result 
 	//NOTE: the interceptor assures that the course ID is valid
 
 	c.Validation.Check(value,
-		revel.Min{0},
-		revel.Max{1000000},
+		revel.Min{Min: 0},
+		revel.Max{Max: 1000000},
 	).MessageKey("validation.invalid.int")
 
 	if c.Validation.HasErrors() {

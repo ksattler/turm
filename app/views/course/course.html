@@ -201,6 +201,18 @@
   </div>
 </div>
 
+<hr>
+
+<!-- event list -->
+<div id="div-events">
+  {{template "course/events.html" dict_addLocale $.currentLocale "events" .course.Events "manage" .course.Manage "session" .session}}
+</div>
+
+<!-- calendar event list -->
+<div id="div-calendar_events">
+  {{template "course/calendarEvents.html" dict_addLocale $.currentLocale "events" .course.CalendarEvents "session" .session}}
+</div>
+
 <!-- description -->
 <div id="div-edit-description" {{if not .course.Description.Valid}}class="d-none"{{end}}>
   <div class="row mb-2">
@@ -517,18 +529,6 @@
       {{msg $ "creator.add.event"}}
     </button>
   </div>
-</div>
-
-<hr>
-
-<!-- event list -->
-<div id="div-events">
-  {{template "course/events.html" dict_addLocale $.currentLocale "events" .course.Events "manage" .course.Manage "session" .session}}
-</div>
-
-<!-- calendar event list -->
-<div id="div-calendar_events">
-  {{template "course/calendarEvents.html" dict_addLocale $.currentLocale "events" .course.CalendarEvents "session" .session}}
 </div>
 
 <script>

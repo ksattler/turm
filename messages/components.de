@@ -30,8 +30,8 @@ button.confirm = Bestätigen
 button.download = Herunterladen
 button.create = Erstellen
 
-button.login = Anmelden / Login
-button.logout = Abmelden / Logout
+button.login = Login
+button.logout = Logout
 button.register = Registrieren
 button.activate.account = Account aktivieren
 

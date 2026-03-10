@@ -79,6 +79,9 @@ func LDAPServerAuth(credentials *models.Credentials, user *models.User) (success
 	if debugSR, debugErr := l.Search(debugSearchRequest); debugErr == nil && len(debugSR.Entries) > 0 {
 		for _, attr := range debugSR.Entries[0].Attributes {
 			log.Debug("LDAP attribute", "name", attr.Name, "values", attr.Values)
+			if strings.HasPrefix(strings.ToLower(attr.Name), "thuedu") {
+				log.Debug("thuEdu attribute", "name", attr.Name, "values", attr.Values)
+			}
 		}
 	}
 

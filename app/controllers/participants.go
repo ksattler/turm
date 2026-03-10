@@ -332,10 +332,11 @@ func (c Participants) Unsubscribe(ID, eventID, userID int) revel.Result {
 	//send e-mail to each auto enrolled user
 	for _, user := range users {
 		mailData := models.EMailData{
-			User:        user,
-			CourseTitle: data.CourseTitle,
-			EventTitle:  data.EventTitle,
-			CourseID:    data.CourseID,
+			User:         user,
+			CourseTitle:  data.CourseTitle,
+			EventTitle:   data.EventTitle,
+			CourseID:     data.CourseID,
+			CreatorEMail: data.CreatorEMail,
 		}
 		err = sendEMail(c.Controller, &mailData,
 			"email.subject.from.wait.list",
@@ -380,10 +381,11 @@ func (c Participants) Waitlist(ID, eventID, userID int) revel.Result {
 	//send e-mail to each auto enrolled user
 	for _, user := range users {
 		mailData := models.EMailData{
-			User:        user,
-			CourseTitle: data.CourseTitle,
-			EventTitle:  data.EventTitle,
-			CourseID:    data.CourseID,
+			User:         user,
+			CourseTitle:  data.CourseTitle,
+			EventTitle:   data.EventTitle,
+			CourseID:     data.CourseID,
+			CreatorEMail: data.CreatorEMail,
 		}
 		err = sendEMail(c.Controller, &mailData,
 			"email.subject.from.wait.list",

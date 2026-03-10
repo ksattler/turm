@@ -100,10 +100,11 @@ func (c Enrollment) Unsubscribe(ID int) revel.Result {
 	for _, user := range users {
 
 		mailData := models.EMailData{
-			User:        user,
-			CourseTitle: data.CourseTitle,
-			EventTitle:  data.EventTitle,
-			CourseID:    data.CourseID,
+			User:         user,
+			CourseTitle:  data.CourseTitle,
+			EventTitle:   data.EventTitle,
+			CourseID:     data.CourseID,
+			CreatorEMail: data.CreatorEMail,
 		}
 
 		err = sendEMail(c.Controller, &mailData,
